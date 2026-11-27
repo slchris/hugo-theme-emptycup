@@ -2,12 +2,32 @@
 {{- $google := .Site.Params.analytics.google | default dict -}}
 {{- $anonymize := $google.anonymizeIP | default true -}}
 {{- with $google.id -}}
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag("js", new Date());
-  gtag("config", {{ . | jsonify | safeJS }}, { anonymize_ip: {{ $anonymize }} });
+  (function () {
+    var loaded = false;
+    function load() {
+      if (loaded) return;
+      loaded = true;
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag("js", new Date());
+      gtag("config", {{ . | jsonify | safeJS }}, { anonymize_ip: {{ $anonymize }} });
+      var script = document.createElement("script");
+      script.async = true;
+      script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent({{ . | jsonify | safeJS }});
+      document.head.appendChild(script);
+    }
+    function schedule() {
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(load, { timeout: 3000 });
+      } else {
+        setTimeout(load, 1500);
+      }
+    }
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule);
+  })();
 </script>
 {{- end -}}
 {{- end -}}

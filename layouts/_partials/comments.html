@@ -12,9 +12,12 @@
       var repo = {{ $u.repo | jsonify | safeJS }};
       var issueTerm = {{ ($u.issueTerm | default "pathname") | jsonify | safeJS }};
       var label = {{ ($u.label | default "") | jsonify | safeJS }};
+      var section = document.getElementById("comments");
+      var started = false;
       function load() {
         var container = document.getElementById("utterances-container");
-        if (!container) return;
+        if (!container || !repo) return;
+        started = true;
         container.innerHTML = "";
         var script = document.createElement("script");
         script.src = "https://utteranc.es/client.js";
@@ -26,11 +29,26 @@
         script.setAttribute("theme", document.documentElement.getAttribute("data-theme") === "dark" ? "github-dark" : "github-light");
         container.appendChild(script);
       }
-      window.__emptycupLoadComments = load;
+      window.__emptycupLoadComments = function () {
+        if (started) load();
+      };
+      function schedule() {
+        if ("IntersectionObserver" in window && section) {
+          var observer = new IntersectionObserver(function (entries) {
+            if (entries.some(function (entry) { return entry.isIntersecting; })) {
+              observer.disconnect();
+              load();
+            }
+          }, { rootMargin: "600px 0px" });
+          observer.observe(section);
+        } else {
+          load();
+        }
+      }
       if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", load);
+        document.addEventListener("DOMContentLoaded", schedule);
       } else {
-        load();
+        schedule();
       }
     })();
   </script>

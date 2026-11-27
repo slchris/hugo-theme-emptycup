@@ -10,13 +10,23 @@
   {{- end }}
 </section>
 
+{{- partial "ad-slot.html" (dict "slot" "homeTop" "class" "home-top" "format" "horizontal" "size" "970 × 90") }}
+
 {{- if .Paginator.Pages }}
-<div class="post-list">
-  {{- range .Paginator.Pages }}
-  {{- partial "summary.html" . }}
-  {{- end }}
+<div class="home-layout">
+  <div class="home-main">
+    <div class="post-list">
+      {{- range $i, $p := .Paginator.Pages }}
+      {{- partial "summary.html" $p }}
+      {{- if eq $i 2 }}
+      {{- partial "ad-slot.html" (dict "slot" "homeFeed" "class" "home-feed" "format" "fluid" "size" "Responsive") }}
+      {{- end }}
+      {{- end }}
+    </div>
+    {{- partial "pagination.html" . }}
+  </div>
+  {{- partial "home-sidebar.html" . }}
 </div>
-{{- partial "pagination.html" . }}
 {{- else }}
 <p class="empty-state">{{ T "noPosts" }}</p>
 {{- end }}

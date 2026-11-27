@@ -31,12 +31,6 @@
       {{ T "updatedOn" }} <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format $dateFormat }}</time>
     </span>
     {{- end }}
-    {{- if .Site.Params.page.enableWordCount }}
-    <span class="meta-item">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pencil"/></svg>
-      {{ T "wordCount" (dict "Count" .WordCount) }}
-    </span>
-    {{- end }}
     {{- if .Site.Params.page.enableReadingTime }}
     <span class="meta-item">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg>

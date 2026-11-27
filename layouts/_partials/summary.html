@@ -21,18 +21,13 @@
     </div>
 
     <h2 class="post-item-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-    {{- with .Params.subtitle }}
-    <p class="post-item-subtitle">{{ . }}</p>
-    {{- end }}
 
-    <div class="post-item-summary">{{ .Summary }}</div>
-
-    {{- with .GetTerms "tags" }}
-    <ul class="post-item-tags">
-      {{- range . }}
-      <li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>
-      {{- end }}
-    </ul>
+    {{- $summary := .Params.summary | default .Params.description -}}
+    {{- if not $summary -}}
+      {{- $summary = .Summary | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
+    {{- end -}}
+    {{- with $summary }}
+    <div class="post-item-summary">{{ . }}</div>
     {{- end }}
 
     <a class="read-more" href="{{ .RelPermalink }}">{{ T "readMore" }}</a>

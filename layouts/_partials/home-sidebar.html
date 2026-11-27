@@ -1,0 +1,28 @@
+{{- $tags := first 12 .Site.Taxonomies.tags.ByCount -}}
+<aside class="side-rail" aria-label="{{ T "sidebar" }}">
+  {{ partial "ad-slot.html" (dict "slot" "sidebar" "class" "sidebar" "format" "rectangle" "size" "300 × 250") }}
+
+  {{- with $tags }}
+  <section class="rail-card">
+    <h2 class="rail-title">{{ T "tagsLabel" }}</h2>
+    <ul class="rail-tags">
+      {{- range . }}
+      <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle }}<span class="rail-count">{{ .Count }}</span></a></li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  <section class="rail-card">
+    <h2 class="rail-title">{{ T "subscribe" }}</h2>
+    <ul class="rail-links">
+      <li><a href="{{ "index.xml" | relLangURL }}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-rss"/></svg><span>RSS</span></a></li>
+      {{- with .Site.Params.social.GitHub }}
+      <li><a href="https://github.com/{{ . }}" target="_blank" rel="noopener noreferrer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg><span>GitHub</span></a></li>
+      {{- end }}
+      {{- with .Site.Params.social.Email }}
+      <li><a href="mailto:{{ . }}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg><span>{{ T "email" }}</span></a></li>
+      {{- end }}
+    </ul>
+  </section>
+</aside>

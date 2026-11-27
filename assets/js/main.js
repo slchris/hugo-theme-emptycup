@@ -228,26 +228,108 @@
      Lightbox
      --------------------------------------------------------------------- */
   if (body.getAttribute("data-lightbox") === "true") {
+    var closeLabel = body.getAttribute("data-label-close-image") || "Close image";
+    var previewLabel = body.getAttribute("data-label-image-preview") || "Image preview";
+    var activeTrigger = null;
+
+    function imageSources(img) {
+      var sources = [img.currentSrc || img.src];
+      var original = img.getAttribute("data-original");
+      if (original) {
+        try {
+          sources.push(new URL(original, window.location.href).href);
+        } catch (e) {}
+      }
+      return sources;
+    }
+
+    function isImageLink(link, img) {
+      if (!link) return false;
+      var href = link.getAttribute("href");
+      if (!href || href.charAt(0) === "#") return false;
+      var absolute;
+      try {
+        absolute = new URL(href, window.location.href).href;
+      } catch (e) {
+        return false;
+      }
+      if (imageSources(img).indexOf(absolute) !== -1) return true;
+      return /\.(png|jpe?g|webp|gif|svg|avif)(?:[?#]|$)/i.test(absolute);
+    }
+
+    function openImage(img, trigger) {
+      activeTrigger = trigger || img;
+      var overlay = document.createElement("div");
+      overlay.className = "lightbox-overlay";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", previewLabel);
+
+      var closeButton = document.createElement("button");
+      closeButton.type = "button";
+      closeButton.className = "lightbox-close";
+      closeButton.setAttribute("aria-label", closeLabel);
+      closeButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>';
+
+      var large = document.createElement("img");
+      large.src = img.getAttribute("data-original") || img.currentSrc || img.src;
+      large.alt = img.alt || "";
+
+      overlay.appendChild(closeButton);
+      overlay.appendChild(large);
+      document.body.appendChild(overlay);
+      document.body.classList.add("lightbox-open");
+
+      function close() {
+        overlay.remove();
+        document.body.classList.remove("lightbox-open");
+        document.removeEventListener("keydown", onKey);
+        if (activeTrigger && typeof activeTrigger.focus === "function") {
+          activeTrigger.focus();
+        }
+        activeTrigger = null;
+      }
+
+      function onKey(event) {
+        if (event.key === "Escape") close();
+        if (event.key === "Tab") {
+          event.preventDefault();
+          closeButton.focus();
+        }
+      }
+
+      overlay.addEventListener("click", close);
+      large.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+      closeButton.addEventListener("click", function (event) {
+        event.stopPropagation();
+        close();
+      });
+      document.addEventListener("keydown", onKey);
+      closeButton.focus();
+    }
+
     document.querySelectorAll(".article-body img").forEach(function (img) {
-      if (img.closest("a")) return;
+      var link = img.closest("a");
+      if (link && !isImageLink(link, img)) return;
       img.style.cursor = "zoom-in";
-      img.addEventListener("click", function () {
-        var overlay = document.createElement("div");
-        overlay.className = "lightbox-overlay";
-        var large = document.createElement("img");
-        large.src = img.currentSrc || img.src;
-        large.alt = img.alt || "";
-        overlay.appendChild(large);
-        var close = function () {
-          overlay.remove();
-          document.removeEventListener("keydown", onKey);
-        };
-        var onKey = function (event) {
-          if (event.key === "Escape") close();
-        };
-        overlay.addEventListener("click", close);
-        document.addEventListener("keydown", onKey);
-        document.body.appendChild(overlay);
+      if (link) {
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          openImage(img, link);
+        });
+      } else {
+        img.addEventListener("click", function () {
+          openImage(img, img);
+        });
+      }
+      img.setAttribute("tabindex", "0");
+      img.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openImage(img, img);
+        }
       });
     });
   }
@@ -284,6 +366,48 @@
     initMermaid();
   }
 
+  var mermaidLoading = false;
+  function loadMermaid() {
+    if (!window.__emptycupMermaid || window.mermaid || mermaidLoading) return;
+    if (!window.__emptycupMermaidSrc) return;
+    mermaidLoading = true;
+    var script = document.createElement("script");
+    script.async = true;
+    script.src = window.__emptycupMermaidSrc;
+    if (window.__emptycupMermaidIntegrity) {
+      script.integrity = window.__emptycupMermaidIntegrity;
+      script.crossOrigin = "anonymous";
+    }
+    script.onload = function () {
+      mermaidLoading = false;
+      initMermaid();
+    };
+    script.onerror = function () {
+      mermaidLoading = false;
+    };
+    document.head.appendChild(script);
+  }
+
+  function startMermaid() {
+    var nodes = document.querySelectorAll("pre.mermaid");
+    if (!nodes.length || !window.__emptycupMermaid) return;
+    if (!("IntersectionObserver" in window)) {
+      loadMermaid();
+      return;
+    }
+    var observer = new IntersectionObserver(
+      function (entries) {
+        if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+        observer.disconnect();
+        loadMermaid();
+      },
+      { rootMargin: "600px 0px" }
+    );
+    nodes.forEach(function (node) {
+      observer.observe(node);
+    });
+  }
+
   /* ---------------------------------------------------------------------
      KaTeX
      --------------------------------------------------------------------- */
@@ -301,6 +425,6 @@
     });
   }
 
-  initMermaid();
+  startMermaid();
   renderMath();
 })();

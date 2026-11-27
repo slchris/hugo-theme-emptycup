@@ -1,0 +1,19 @@
+{{- $dest := .Destination -}}
+{{- $lookup := strings.TrimPrefix "./" $dest -}}
+{{- $img := .Page.Resources.GetMatch $lookup -}}
+{{- if $img -}}
+  {{- $isRaster := in (slice "png" "jpeg" "webp") $img.MediaType.SubType -}}
+  {{- if $isRaster -}}
+    {{- $out := $img -}}
+    {{- if gt $img.Width 1400 -}}
+      {{- $out = $img.Resize "1400x webp q82" -}}
+    {{- else -}}
+      {{- $out = $img.Process "webp q82" -}}
+    {{- end -}}
+<img src="{{ $out.RelPermalink }}" width="{{ $out.Width }}" height="{{ $out.Height }}" alt="{{ .Text }}" loading="lazy" decoding="async" data-original="{{ $img.RelPermalink }}"{{ with .Title }} title="{{ . }}"{{ end }}>
+  {{- else -}}
+<img src="{{ $img.RelPermalink }}" alt="{{ .Text }}" loading="lazy" decoding="async"{{ with .Title }} title="{{ . }}"{{ end }}>
+  {{- end -}}
+{{- else -}}
+<img src="{{ $dest | safeURL }}" alt="{{ .Text }}" loading="lazy" decoding="async"{{ with .Title }} title="{{ . }}"{{ end }}>
+{{- end -}}

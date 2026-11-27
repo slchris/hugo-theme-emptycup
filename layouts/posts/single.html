@@ -9,8 +9,11 @@
 {{- end -}}
 {{- $tocHTML := .TableOfContents -}}
 {{- $hasToc := and $tocEnabled (ne $tocHTML "") -}}
+{{- $ads := .Site.Params.ads | default dict -}}
+{{- $hasAd := and $ads.enable (or $ads.placeholder $ads.client) -}}
+{{- $showRail := or $hasToc $hasAd -}}
 
-<div class="post-layout{{ if $hasToc }} with-toc{{ end }}">
+<div class="post-layout{{ if $showRail }} with-rail{{ end }}">
   <article class="article">
     <header class="article-header">
       <h1 class="article-title">{{ .Title }}</h1>
@@ -32,7 +35,12 @@
 
     <div class="article-body" id="article-body">
       {{- partial "outdated.html" . }}
-      {{- .Content -}}
+      {{- $adHTML := partial "ad-slot.html" (dict "slot" "articleTop" "class" "article-top" "format" "auto" "size" "Responsive") -}}
+      {{- if $adHTML -}}
+        {{- replace .Content "</p>" (printf "</p>%s" $adHTML) 1 | safeHTML -}}
+      {{- else -}}
+        {{- .Content -}}
+      {{- end -}}
     </div>
 
     <footer class="article-footer">
@@ -42,12 +50,6 @@
         {{- range $i, $t := . }}{{ if $i }} {{ end }}<a href="{{ $t.RelPermalink }}">#{{ $t.LinkTitle }}</a>{{ end -}}
       </div>
       {{- end }}
-
-      <div class="post-info-links">
-        <button type="button" class="text-button" onclick="window.history.back()">{{ T "back" }}</button>
-        <span class="separator">|</span>
-        <a href="{{ .Site.Home.RelPermalink }}">{{ T "home" }}</a>
-      </div>
 
       <nav class="post-nav" aria-label="{{ T "postNavigation" }}">
         {{- with .PrevInSection }}
@@ -69,10 +71,15 @@
     {{- partial "comments.html" . }}
   </article>
 
-  {{- if $hasToc }}
-  <aside class="toc-rail">
-    <h2 class="toc-title">{{ T "contents" }}</h2>
-    <div class="toc-content">{{ $tocHTML | safeHTML }}</div>
+  {{- if $showRail }}
+  <aside class="post-rail">
+    {{- partial "ad-slot.html" (dict "slot" "sidebar" "class" "sidebar" "format" "rectangle" "size" "300 × 250") }}
+    {{- if $hasToc }}
+    <div class="toc-rail">
+      <h2 class="toc-title">{{ T "contents" }}</h2>
+      <div class="toc-content">{{ $tocHTML | safeHTML }}</div>
+    </div>
+    {{- end }}
   </aside>
   {{- end }}
 </div>

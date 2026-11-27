@@ -1,0 +1,23 @@
+{{- $ads := site.Params.ads -}}
+{{- if $ads.enable -}}
+  {{- $name := .slot -}}
+  {{- $slot := "" -}}
+  {{- with $ads.slots -}}
+    {{- $slot = index . $name | default "" -}}
+  {{- end -}}
+  {{- $client := $ads.client | default "" -}}
+  {{- $format := .format | default "auto" -}}
+  {{- $class := .class | default $name -}}
+  {{- if and $client $slot -}}
+<aside class="ad-slot ad-slot-{{ $class }}" aria-label="{{ T "advertisement" }}">
+  <span class="ad-slot-label">{{ T "advertisement" }}</span>
+  <ins class="adsbygoogle" style="display:block" data-ad-client="{{ $client }}" data-ad-slot="{{ $slot }}" data-ad-format="{{ $format }}" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</aside>
+  {{- else if $ads.placeholder -}}
+<aside class="ad-slot ad-slot-{{ $class }} ad-slot-placeholder" aria-label="{{ T "advertisement" }}">
+  <span class="ad-slot-label">{{ T "advertisement" }}</span>
+  <span class="ad-slot-size">{{ .size | default "Responsive" }}</span>
+</aside>
+  {{- end -}}
+{{- end -}}
