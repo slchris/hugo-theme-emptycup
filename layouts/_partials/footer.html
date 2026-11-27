@@ -1,0 +1,22 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-line">
+      <span>&copy; {{ with .Site.Params.footer.since }}{{ . }}&ndash;{{ end }}{{ now.Year }}</span>
+      {{- if ne .Site.Params.footer.author false }}
+      <span><a href="{{ .Site.Params.author.link | default .Site.Home.RelPermalink }}" target="_blank" rel="noopener noreferrer">{{ .Site.Params.author.name }}</a></span>
+      {{- end }}
+      {{- with .Site.Params.footer.license }}
+      <span>{{ . | safeHTML }}</span>
+      {{- end }}
+    </p>
+    <p class="footer-line footer-muted">
+      <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a></span>
+      <span>Theme &mdash; <a href="https://github.com/slchris/hugo-theme-emptycup" target="_blank" rel="noopener noreferrer">EmptyCup</a></span>
+      {{- with .Site.Params.social }}
+        {{- with .GitHub }}<a href="https://github.com/{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-github"/></svg></a>{{ end }}
+        {{- with .Email }}<a href="mailto:{{ . }}" aria-label="Email"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-mail"/></svg></a>{{ end }}
+        {{- if .RSS }}<a href="{{ "index.xml" | relLangURL }}" aria-label="RSS"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-rss"/></svg></a>{{ end }}
+      {{- end }}
+    </p>
+  </div>
+</footer>

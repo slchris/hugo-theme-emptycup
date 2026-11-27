@@ -1,0 +1,22 @@
+{{- $cfg := .Site.Params.page.outdatedArticleReminder | default dict -}}
+{{- $enable := $cfg.enable | default false -}}
+{{- $reminder := $cfg.reminder | default 180 -}}
+{{- $warning := $cfg.warning | default 365 -}}
+{{- with .Params.outdatedArticleReminder -}}
+  {{- if isset . "enable" }}{{ $enable = .enable }}{{ end -}}
+  {{- with .reminder }}{{ $reminder = . }}{{ end -}}
+  {{- with .warning }}{{ $warning = . }}{{ end -}}
+{{- end -}}
+{{- if $enable -}}
+  {{- $days := div (sub now.Unix .Lastmod.Unix) 86400 -}}
+  {{- if gt $days $reminder -}}
+  <div class="outdated {{ if gt $days $warning }}outdated-warning{{ else }}outdated-note{{ end }}">
+    {{- $date := .Lastmod.Format "2006-01-02" -}}
+    {{- if gt $days $warning -}}
+      {{ T "outdatedWarning" (dict "Date" $date) }}
+    {{- else -}}
+      {{ T "outdatedNote" (dict "Date" $date) }}
+    {{- end -}}
+  </div>
+  {{- end -}}
+{{- end -}}

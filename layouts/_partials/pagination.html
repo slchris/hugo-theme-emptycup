@@ -1,0 +1,24 @@
+{{- $p := .Paginator -}}
+{{- if gt $p.TotalPages 1 }}
+<nav class="pagination" aria-label="{{ T "pagination" }}">
+  {{- if $p.HasPrev }}
+  <a class="page-link page-prev" href="{{ $p.Prev.URL }}" rel="prev" aria-label="{{ T "previousPage" }}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-left"/></svg></a>
+  {{- end }}
+  {{- $shownPrev := 0 }}
+  {{- range $p.Pagers }}
+    {{- $n := .PageNumber }}
+    {{- if or (le $n 2) (ge $n (sub $p.TotalPages 1)) (and (ge $n (sub $p.PageNumber 2)) (le $n (add $p.PageNumber 2))) }}
+      {{- if gt (sub $n $shownPrev) 1 }}<span class="page-ellipsis">&hellip;</span>{{ end }}
+      {{- if eq $n $p.PageNumber }}
+      <span class="page-link current" aria-current="page">{{ $n }}</span>
+      {{- else }}
+      <a class="page-link" href="{{ .URL }}">{{ $n }}</a>
+      {{- end }}
+      {{- $shownPrev = $n }}
+    {{- end }}
+  {{- end }}
+  {{- if $p.HasNext }}
+  <a class="page-link page-next" href="{{ $p.Next.URL }}" rel="next" aria-label="{{ T "nextPage" }}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+  {{- end }}
+</nav>
+{{- end }}

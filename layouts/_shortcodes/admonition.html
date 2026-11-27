@@ -1,0 +1,33 @@
+{{- $type := cond .IsNamedParams (.Get "type") (.Get 0) | default "note" -}}
+{{- $title := cond .IsNamedParams (.Get "title") (.Get 1) | default (T $type) -}}
+{{- $open := cond .IsNamedParams (.Get "open") (.Get 2) -}}
+{{- $isOpen := true -}}
+{{- if eq $open false }}{{ $isOpen = false }}{{ end -}}
+{{- $icons := dict
+  "note" "i-pencil"
+  "abstract" "i-list"
+  "info" "i-info"
+  "tip" "i-lightbulb"
+  "success" "i-check-circle"
+  "question" "i-help-circle"
+  "warning" "i-alert-triangle"
+  "failure" "i-x-circle"
+  "danger" "i-alert-octagon"
+  "bug" "i-bug"
+  "example" "i-list"
+  "quote" "i-quote"
+  "important" "i-alert-circle"
+  "caution" "i-alert-triangle"
+-}}
+{{- $icon := index $icons $type | default "i-info" -}}
+{{- if $isOpen -}}
+<div class="admonition admonition-{{ $type }}">
+  <div class="admonition-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#{{ $icon }}"/></svg><span>{{ $title }}</span></div>
+  <div class="admonition-content">{{ .Inner | .Page.RenderString }}</div>
+</div>
+{{- else -}}
+<details class="admonition admonition-{{ $type }}">
+  <summary class="admonition-title"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#{{ $icon }}"/></svg><span>{{ $title }}</span></summary>
+  <div class="admonition-content">{{ .Inner | .Page.RenderString }}</div>
+</details>
+{{- end -}}

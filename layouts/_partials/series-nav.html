@@ -1,0 +1,23 @@
+{{- $page := . -}}
+{{- with .GetTerms "series" -}}
+  {{- range . -}}
+    {{- $term := . -}}
+  <details class="series-nav" open>
+    <summary>
+      <span class="series-label">{{ T "seriesLabel" }} &mdash; {{ .LinkTitle }}</span>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+    </summary>
+    <ol class="series-list">
+      {{- range .Pages.ByParam "series_weight" -}}
+      <li>
+        {{- if eq .RelPermalink $page.RelPermalink -}}
+        <span class="current" aria-current="page">{{ .LinkTitle }}</span>
+        {{- else -}}
+        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        {{- end -}}
+      </li>
+      {{- end -}}
+    </ol>
+  </details>
+  {{- end -}}
+{{- end -}}

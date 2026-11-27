@@ -1,0 +1,13 @@
+{{- if .Site.Params.analytics.enable -}}
+{{- $google := .Site.Params.analytics.google | default dict -}}
+{{- $anonymize := $google.anonymizeIP | default true -}}
+{{- with $google.id -}}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag("js", new Date());
+  gtag("config", {{ . | jsonify | safeJS }}, { anonymize_ip: {{ $anonymize }} });
+</script>
+{{- end -}}
+{{- end -}}

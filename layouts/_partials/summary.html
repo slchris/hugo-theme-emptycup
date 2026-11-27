@@ -1,0 +1,40 @@
+{{- $imgSrc := .Params.featuredImagePreview | default .Params.featuredImage -}}
+<article class="post-item">
+  {{- with $imgSrc }}
+    {{- $img := $.Resources.GetMatch . -}}
+    {{- if $img }}
+  <a class="post-thumb" href="{{ $.RelPermalink }}" tabindex="-1" aria-hidden="true">
+    {{- $thumb := $img.Fill "800x240 Center webp q75" }}
+    <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="" loading="lazy" decoding="async">
+  </a>
+    {{- end }}
+  {{- end }}
+
+  <div class="post-item-body">
+    <div class="post-item-meta">
+      <time datetime="{{ .PublishDate.Format "2006-01-02" }}">{{ .PublishDate.Format (.Site.Params.dateformat | default "2006-01-02") }}</time>
+      {{- with .GetTerms "categories" }}
+      <span class="post-item-categories">{{ T "includedIn" }}
+        {{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ $t.RelPermalink }}">{{ $t.LinkTitle }}</a>{{ end -}}
+      </span>
+      {{- end }}
+    </div>
+
+    <h2 class="post-item-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+    {{- with .Params.subtitle }}
+    <p class="post-item-subtitle">{{ . }}</p>
+    {{- end }}
+
+    <div class="post-item-summary">{{ .Summary }}</div>
+
+    {{- with .GetTerms "tags" }}
+    <ul class="post-item-tags">
+      {{- range . }}
+      <li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+
+    <a class="read-more" href="{{ .RelPermalink }}">{{ T "readMore" }}</a>
+  </div>
+</article>

@@ -1,0 +1,11 @@
+{{- $comment := and .IsPage .Site.Params.page.comment.enable .Site.Params.page.comment.utterances.enable -}}
+<div class="floating-controls">
+  <a href="#content" id="back-to-top" class="floating-button" title="{{ T "backToTop" }}" aria-label="{{ T "backToTop" }}">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-arrow-up"/></svg>
+  </a>
+  {{- if $comment }}
+  <a href="#comments" class="floating-button" title="{{ T "viewComments" }}" aria-label="{{ T "viewComments" }}">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-message"/></svg>
+  </a>
+  {{- end }}
+</div>

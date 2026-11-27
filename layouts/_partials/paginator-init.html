@@ -5,10 +5,10 @@
   {{- $size := .Site.Params.home.posts.paginate | default 6 -}}
   {{- $pag = .Paginate $pages $size -}}
 {{- else if eq .Kind "section" -}}
-  {{- $groups := .Pages.GroupByDate "2006" -}}
-  {{- $pag = .Paginate $groups 1 -}}
+  {{- $size := .Site.Params.section.paginate | default 10 -}}
+  {{- $pag = .Paginate (.Pages.GroupByDate "2006") $size -}}
 {{- else if eq .Kind "term" -}}
-  {{- $groups := .Pages.GroupByDate "2006" -}}
-  {{- $pag = .Paginate $groups 1 -}}
+  {{- $size := .Site.Params.list.paginate | default 10 -}}
+  {{- $pag = .Paginate (.Pages.GroupByDate "2006") $size -}}
 {{- end -}}
 {{- with $pag -}}{{ $.Scratch.Set "paginator" . }}{{- end -}}

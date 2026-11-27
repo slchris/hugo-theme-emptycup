@@ -1,0 +1,50 @@
+{{- $dateFormat := .Site.Params.dateformat | default "2006-01-02" -}}
+{{- $readingTime := int (math.Ceil (div (float .WordCount) (.Site.Params.reading_speed | default 228))) -}}
+<div class="post-meta">
+  <div class="post-meta-line">
+    <span class="meta-item meta-author">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pencil"/></svg>
+      {{- with .Site.Params.author.name }}{{ with $.Site.Params.author.link }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.Site.Params.author.name }}</a>{{ else }}{{ . }}{{ end }}{{ end }}
+    </span>
+    {{- with .GetTerms "categories" }}
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-folder"/></svg>
+      {{ T "includedIn" }}
+      {{ range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ $t.RelPermalink }}">{{ $t.LinkTitle }}</a>{{ end -}}
+    </span>
+    {{- end }}
+    {{- with .GetTerms "series" }}
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-layers"/></svg>
+      {{- range $i, $t := . }}{{ if $i }}, {{ end }}<a href="{{ $t.RelPermalink }}">{{ $t.LinkTitle }}</a>{{ end -}}
+    </span>
+    {{- end }}
+  </div>
+  <div class="post-meta-line post-meta-secondary">
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-calendar"/></svg>
+      {{ T "publishedOn" }} <time datetime="{{ .PublishDate.Format "2006-01-02" }}">{{ .PublishDate.Format $dateFormat }}</time>
+    </span>
+    {{- if ne (.PublishDate.Format "2006-01-02") (.Lastmod.Format "2006-01-02") }}
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pencil"/></svg>
+      {{ T "updatedOn" }} <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format $dateFormat }}</time>
+    </span>
+    {{- end }}
+    {{- if .Site.Params.page.enableWordCount }}
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pencil"/></svg>
+      {{ T "wordCount" (dict "Count" .WordCount) }}
+    </span>
+    {{- end }}
+    {{- if .Site.Params.page.enableReadingTime }}
+    <span class="meta-item">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-clock"/></svg>
+      {{ T "readingTime" (dict "Count" $readingTime) }}
+    </span>
+    {{- end }}
+    {{- with .Params.license }}
+    <span class="meta-item">{{ . | safeHTML }}</span>
+    {{- end }}
+  </div>
+</div>

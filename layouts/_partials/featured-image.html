@@ -1,0 +1,16 @@
+{{- with .Params.featuredImage -}}
+  {{- $src := . -}}
+  {{- $img := $.Resources.GetMatch $src -}}
+  <figure class="featured-image">
+    {{- if $img }}
+      {{- $out := $img -}}
+      {{- if gt $img.Width 1200 }}{{ $out = $img.Resize "1200x webp q80" }}{{ else }}{{ $out = $img.Process "webp q80" }}{{ end }}
+    <img src="{{ $out.RelPermalink }}" width="{{ $out.Width }}" height="{{ $out.Height }}" alt="{{ $.Title }}" loading="eager" decoding="async">
+    {{- else if or (hasPrefix $src "http") (hasPrefix $src "/") }}
+    <img src="{{ $src | relURL }}" alt="{{ $.Title }}" loading="eager" decoding="async">
+    {{- end }}
+    {{- with $.Params.featuredImageCaption }}
+    <figcaption>{{ . }}</figcaption>
+    {{- end }}
+  </figure>
+{{- end -}}

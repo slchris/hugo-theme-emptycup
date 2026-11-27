@@ -1,0 +1,9 @@
+{{ define "title" }}404 - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<div class="not-found">
+  <p class="not-found-code">404</p>
+  <p class="not-found-text">{{ if eq .Site.Language.Lang "zh-cn" }}页面不存在。{{ else }}Page not found.{{ end }}</p>
+  <p><a href="{{ .Site.Home.RelPermalink }}">{{ if eq .Site.Language.Lang "zh-cn" }}返回首页{{ else }}Back to home{{ end }}</a></p>
+</div>
+{{ end }}

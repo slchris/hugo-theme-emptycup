@@ -1,0 +1,18 @@
+{{- $pageSponsor := .Params.sponsor | default dict -}}
+{{- $siteSponsor := .Site.Params.sponsor | default dict -}}
+{{- $enable := $pageSponsor.enable | default $siteSponsor.enable -}}
+{{- if $enable -}}
+{{- $bio := $pageSponsor.bio | default $siteSponsor.bio -}}
+{{- $link := $pageSponsor.link | default $siteSponsor.link -}}
+<div class="sponsor">
+  {{- with $bio }}
+  <p class="sponsor-bio">{{ . }}</p>
+  {{- end }}
+  {{- with $link }}
+  <a class="button sponsor-button" href="{{ . }}" target="_blank" rel="noopener noreferrer">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg>
+    {{ T "sponsor" }}
+  </a>
+  {{- end }}
+</div>
+{{- end -}}

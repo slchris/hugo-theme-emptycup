@@ -1,0 +1,43 @@
+{{- $other := slice -}}
+{{- range .AllTranslations }}{{ if ne .Lang $.Lang }}{{ $other = $other | append . }}{{ end }}{{ end -}}
+{{- $langTarget := false -}}
+{{- with $other }}{{ $langTarget = index . 0 }}{{ end -}}
+{{- if not $langTarget -}}
+  {{- range .Site.Home.AllTranslations }}{{ if ne .Lang $.Lang }}{{ $langTarget = . }}{{ end }}{{ end -}}
+{{- end -}}
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a>
+
+    <nav class="nav" aria-label="Main">
+      {{- range .Site.Menus.main }}
+        {{- $href := .URL | relLangURL }}
+        {{- $active := or (eq $.RelPermalink $href) (and (ne $href "/") (hasPrefix $.RelPermalink $href)) }}
+        <a href="{{ $href }}"{{ if $active }} class="active" aria-current="page"{{ end }}>{{ .Name }}</a>
+      {{- end }}
+    </nav>
+
+    <div class="header-actions">
+      {{- with $langTarget }}
+      <a class="lang-switch" href="{{ .RelPermalink }}" hreflang="{{ .Lang }}" lang="{{ .Language.Locale }}" title="{{ T "selectLanguage" }}">{{ .Language.Label }}</a>
+      {{- end }}
+      <button class="icon-button theme-toggle" type="button" aria-label="{{ T "switchTheme" }}" title="{{ T "switchTheme" }}">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg>
+      </button>
+      <button class="icon-button nav-toggle" type="button" aria-label="{{ T "menu" }}" aria-expanded="false" aria-controls="mobile-nav">
+        <svg class="icon icon-menu" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Main">
+    {{- range .Site.Menus.main }}
+      {{- $href := .URL | relLangURL }}
+      {{- $active := or (eq $.RelPermalink $href) (and (ne $href "/") (hasPrefix $.RelPermalink $href)) }}
+      <a href="{{ $href }}"{{ if $active }} class="active" aria-current="page"{{ end }}>{{ .Name }}</a>
+    {{- end }}
+  </nav>
+</header>

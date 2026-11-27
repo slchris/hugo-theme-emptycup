@@ -1,0 +1,25 @@
+{{ define "title" -}}
+{{- if gt .Paginator.PageNumber 1 }}{{ T "pageTitle" (dict "Number" .Paginator.PageNumber) }} - {{ .Title }} - {{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
+{{- end }}
+
+{{ define "main" }}
+<div class="list-page">
+  <h1 class="page-title">{{ .Title }}</h1>
+
+  {{- range .Paginator.PageGroups }}
+  <section class="year-group">
+    <h2 class="year-title">{{ .Key }}</h2>
+    <ul class="archive-list">
+      {{- range .Pages }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <time datetime="{{ .PublishDate.Format "2006-01-02" }}">{{ .PublishDate.Format "01-02" }}</time>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+
+  {{- partial "pagination.html" . }}
+</div>
+{{ end }}

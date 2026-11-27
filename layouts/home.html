@@ -1,0 +1,23 @@
+{{ define "title" -}}
+{{- if gt .Paginator.PageNumber 1 }}{{ T "pageTitle" (dict "Number" .Paginator.PageNumber) }} - {{ .Title }}{{ else }}{{ .Title }}{{ end -}}
+{{- end }}
+
+{{ define "main" }}
+<section class="hero">
+  <h1 class="hero-title">{{ .Site.Title }}</h1>
+  {{- with .Site.Params.description }}
+  <p class="hero-desc">{{ . }}</p>
+  {{- end }}
+</section>
+
+{{- if .Paginator.Pages }}
+<div class="post-list">
+  {{- range .Paginator.Pages }}
+  {{- partial "summary.html" . }}
+  {{- end }}
+</div>
+{{- partial "pagination.html" . }}
+{{- else }}
+<p class="empty-state">{{ T "noPosts" }}</p>
+{{- end }}
+{{ end }}

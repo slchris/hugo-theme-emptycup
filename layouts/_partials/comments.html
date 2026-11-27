@@ -1,0 +1,38 @@
+{{- $cfg := .Site.Params.page.comment | default dict -}}
+{{- $u := $cfg.utterances | default dict -}}
+{{- if and $cfg.enable $u.enable }}
+<section class="comments" id="comments">
+  <h2 class="comments-title">{{ T "commentsTitle" }}</h2>
+  <div id="utterances-container"></div>
+  <noscript>
+    <p>Please enable JavaScript to view the comments powered by <a href="https://utteranc.es/">Utterances</a>.</p>
+  </noscript>
+  <script>
+    (function () {
+      var repo = {{ $u.repo | jsonify | safeJS }};
+      var issueTerm = {{ ($u.issueTerm | default "pathname") | jsonify | safeJS }};
+      var label = {{ ($u.label | default "") | jsonify | safeJS }};
+      function load() {
+        var container = document.getElementById("utterances-container");
+        if (!container) return;
+        container.innerHTML = "";
+        var script = document.createElement("script");
+        script.src = "https://utteranc.es/client.js";
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        script.setAttribute("repo", repo);
+        script.setAttribute("issue-term", issueTerm);
+        script.setAttribute("label", label);
+        script.setAttribute("theme", document.documentElement.getAttribute("data-theme") === "dark" ? "github-dark" : "github-light");
+        container.appendChild(script);
+      }
+      window.__emptycupLoadComments = load;
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", load);
+      } else {
+        load();
+      }
+    })();
+  </script>
+</section>
+{{- end }}

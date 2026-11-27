@@ -1,0 +1,153 @@
+{{- $pag := .Scratch.Get "paginator" -}}
+{{- $site := .Site -}}
+{{- $desc := .Description -}}
+{{- if and (not $desc) .IsPage -}}
+  {{- $desc = .Summary | plainify | truncate 160 -}}
+{{- end -}}
+{{- $desc = $desc | default $site.Params.description -}}
+
+{{- $keywords := .Params.keywords | default $site.Params.keywords -}}
+
+{{- $img := "" -}}
+{{- with .Params.images }}{{ $img = index . 0 }}{{ end -}}
+{{- if not $img -}}{{- with .Params.featuredImage }}{{ $img = . }}{{ end -}}{{- end -}}
+{{- if not $img -}}{{- $img = $site.Params.page.seo.image | default $site.Params.seo.image -}}{{- end -}}
+{{- if $img -}}
+  {{- if not (or (hasPrefix $img "http") (hasPrefix $img "/")) -}}
+    {{- with .Resources.GetMatch $img }}{{ $img = .Permalink }}{{ end -}}
+  {{- end -}}
+  {{- $img = $img | absURL -}}
+{{- end -}}
+
+<meta name="description" content="{{ $desc }}">
+{{- with $keywords }}
+<meta name="keywords" content="{{ delimit . ", " }}">
+{{- end }}
+
+{{- $canonical := .Permalink -}}
+{{- with $pag }}{{ if gt .PageNumber 1 }}{{ $canonical = .URL | absLangURL }}{{ end }}{{ end }}
+<link rel="canonical" href="{{ $canonical }}">
+{{- $pageNumber := 1 }}
+{{- with $pag }}{{ $pageNumber = .PageNumber }}{{ end }}
+{{- if and .IsTranslated (eq $pageNumber 1) }}
+  {{- range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}">
+  {{- end }}
+  {{- $defaultLang := hugo.Sites.Default.Language.Lang -}}
+  {{- $default := index .AllTranslations 0 -}}
+  {{- range .AllTranslations }}{{ if eq .Lang $defaultLang }}{{ $default = . }}{{ end }}{{ end }}
+<link rel="alternate" hreflang="x-default" href="{{ $default.Permalink }}">
+{{- end }}
+{{- if .PrevInSection }}
+<link rel="prev" href="{{ .PrevInSection.Permalink }}">
+{{- end }}
+{{- if .NextInSection }}
+<link rel="next" href="{{ .NextInSection.Permalink }}">
+{{- end }}
+
+{{- with .OutputFormats.Get "RSS" }}
+<link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ $site.Title }}">
+{{- end }}
+
+{{- /* Open Graph */}}
+<meta property="og:title" content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ $canonical }}">
+<meta property="og:site_name" content="{{ $site.Title }}">
+<meta property="og:locale" content="{{ replace ($site.Language.Locale | default $site.Language.Lang) "-" "_" }}">
+{{- with $img }}
+<meta property="og:image" content="{{ . }}">
+{{- end }}
+{{- if .IsPage }}
+<meta property="article:published_time" content="{{ .PublishDate.Format "2006-01-02T15:04:05-07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" }}">
+{{- range .Params.categories }}
+<meta property="article:section" content="{{ . }}">
+{{- end }}
+{{- range .Params.tags }}
+<meta property="article:tag" content="{{ . }}">
+{{- end }}
+{{- end }}
+
+{{- /* Twitter Card */}}
+<meta name="twitter:card" content="{{ if $img }}summary_large_image{{ else }}summary{{ end }}">
+<meta name="twitter:title" content="{{ .Title }}">
+<meta name="twitter:description" content="{{ $desc }}">
+{{- with $img }}
+<meta name="twitter:image" content="{{ . }}">
+{{- end }}
+
+{{- if eq .Kind "404" }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
+
+{{- /* Structured data */}}
+{{- if .IsHome }}
+{{- $website := dict "@context" "https://schema.org" "@type" "WebSite" "name" $site.Title "url" $site.Home.Permalink "description" $site.Params.description "inLanguage" ($site.Language.Locale | default $site.Language.Lang) }}
+<script type="application/ld+json">{{ $website | jsonify | safeJS }}</script>
+{{- else if .IsPage }}
+{{- $publisher := $site.Params.page.seo.publisher | default dict }}
+{{- $publisherLD := dict "@type" "Organization" "name" ($publisher.name | default $site.Title) }}
+{{- with $publisher.logoUrl }}
+  {{- $publisherLD = merge $publisherLD (dict "logo" (dict "@type" "ImageObject" "url" (. | absURL))) }}
+{{- end }}
+{{- $author := dict "@type" "Person" "name" ($site.Params.author.name | default $site.Title) }}
+{{- with $site.Params.author.link }}{{ $author = merge $author (dict "url" .) }}{{ end }}
+{{- $ld := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "description" ($desc | default "")
+  "inLanguage" ($site.Language.Locale | default $site.Language.Lang)
+  "url" .Permalink
+  "datePublished" (.PublishDate.Format "2006-01-02T15:04:05-07:00")
+  "dateModified" (.Lastmod.Format "2006-01-02T15:04:05-07:00")
+  "wordcount" .WordCount
+  "publisher" $publisherLD
+  "author" $author
+  "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+-}}
+{{- with $img }}{{ $ld = merge $ld (dict "image" (slice .)) }}{{ end }}
+{{- with .Params.categories }}{{ $ld = merge $ld (dict "genre" (delimit . ", ")) }}{{ end }}
+<script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
+{{- end }}
+
+{{- /* Icons and manifest */}}
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+{{- if $site.Params.enablePWA }}
+<link rel="manifest" href="/site.webmanifest">
+{{- end }}
+
+{{- /* Styles */}}
+{{- $main := resources.Get "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $main.RelPermalink }}" integrity="{{ $main.Data.Integrity }}">
+{{- $chroma := resources.Get "css/chroma.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $chroma.RelPermalink }}" integrity="{{ $chroma.Data.Integrity }}">
+
+{{- /* Mermaid */}}
+{{- $hasMermaid := or (eq .Params.mermaid true) (in .RawContent "```mermaid") (in .RawContent "{{< mermaid") -}}
+{{- if $hasMermaid }}
+{{- with resources.Get "js/mermaid-10.9.8.min.js" }}
+{{- $m := . | fingerprint "sha384" }}
+<script src="{{ $m.RelPermalink }}" integrity="{{ $m.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{- end }}
+<script>window.__emptycupMermaid = true;</script>
+{{- end }}
+
+{{- /* KaTeX */}}
+{{- $math := or (eq .Params.math true) (and .Params.math .Params.math.enable) -}}
+{{- if $math }}
+{{- $katexCSS := resources.Get "lib/katex/katex.min.css" | fingerprint }}
+<link rel="stylesheet" href="{{ $katexCSS.RelPermalink }}" integrity="{{ $katexCSS.Data.Integrity }}">
+{{- $katexJS := resources.Get "lib/katex/katex.min.js" | fingerprint }}
+<script src="{{ $katexJS.RelPermalink }}" integrity="{{ $katexJS.Data.Integrity }}" defer></script>
+{{- $autoRender := resources.Get "lib/katex/auto-render.min.js" | fingerprint }}
+<script src="{{ $autoRender.RelPermalink }}" integrity="{{ $autoRender.Data.Integrity }}" defer></script>
+<script>window.__emptycupMath = true;</script>
+{{- end }}
+
+{{- partial "analytics.html" . -}}

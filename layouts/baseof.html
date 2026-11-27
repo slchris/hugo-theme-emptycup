@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ .Site.Language.LanguageCode | default .Site.Language.Lang }}">
+<html lang="{{ .Site.Language.Locale | default .Site.Language.Lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
   <title>{{ block "title" . }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
   {{- partial "head.html" . -}}
 </head>
-<body class="kind-{{ .Kind }}"{{ if .Params.lightgallery }} data-lightbox="true"{{ end }}{{ if .Site.Params.page.table.sort }} data-table-sort="true"{{ end }}>
+<body class="kind-{{ .Kind }}"{{ if .Params.lightgallery }} data-lightbox="true"{{ end }}{{ if .Site.Params.page.table.sort }} data-table-sort="true"{{ end }} data-code-copy="{{ if ne .Site.Params.page.code.copy false }}true{{ end }}" data-max-code-lines="{{ .Site.Params.page.code.maxShownLines | default 0 }}" data-label-expand="{{ T "expandCode" }}" data-label-collapse="{{ T "collapseCode" }}" data-label-copy="{{ T "copyCode" }}">
   {{- partial "sprite.html" . -}}
   <a class="skip-link" href="#content">{{ T "skipToContent" }}</a>
   {{- partial "header.html" . -}}

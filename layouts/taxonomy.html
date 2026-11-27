@@ -1,0 +1,20 @@
+{{ define "title" -}}
+{{- $name := .Title -}}
+{{- if eq .Data.Singular "tag" }}{{ $name = T "allTags" }}{{ else if eq .Data.Singular "category" }}{{ $name = T "allCategories" }}{{ else if eq .Data.Singular "series" }}{{ $name = T "allSeries" }}{{ end -}}
+{{- $name }} - {{ .Site.Title -}}
+{{- end }}
+
+{{ define "main" }}
+{{- $name := .Title -}}
+{{- if eq .Data.Singular "tag" }}{{ $name = T "allTags" }}{{ else if eq .Data.Singular "category" }}{{ $name = T "allCategories" }}{{ else if eq .Data.Singular "series" }}{{ $name = T "allSeries" }}{{ end }}
+<div class="list-page taxonomy-page">
+  <h1 class="page-title">{{ $name }}</h1>
+  <ul class="term-grid">
+    {{- range .Data.Terms.ByCount }}
+    <li>
+      <a href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }} <span class="term-count">{{ .Count }}</span></a>
+    </li>
+    {{- end }}
+  </ul>
+</div>
+{{ end }}
