@@ -5,7 +5,8 @@ The personal blog theme of [半瓶斋 / The Empty Cup](https://blog.plz.ac). A c
 ## Features
 
 - System sans typography and a clean, spacious reading surface, with a matching dark mode (respects `prefers-color-scheme`, remembers the reader's choice)
-- Fluid page shell: a two-column post grid on wide screens, a three-column article layout with metadata, reading column and TOC, and a single comfortable column on smaller screens
+- Fluid page shell: a two-column post grid on wide screens, a three-column article layout with a recent-article feed, reading column and right-edge TOC, and a single comfortable column on smaller screens
+- Reading / wide layout toggle: wide shows the recent-article feed on the left; reading hides it and keeps the article centered with the TOC pinned to the right edge
 - Google AdSense slots for the home leaderboard, in-feed, sidebar, and top of article; all optional and disabled by default
 - Article layout with a sticky table of contents rail on wide screens and a collapsible TOC on small screens
 - Client-side Mermaid diagrams, KaTeX math, code copy / long-block collapse, shell command emphasis, sortable tables, and a lightweight image lightbox
