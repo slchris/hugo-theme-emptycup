@@ -26,6 +26,13 @@
         <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
         <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sun"/></svg>
       </button>
+      {{- if and .IsPage (eq .Type "posts") }}
+      <button class="layout-toggle" type="button" title="{{ T "toggleLayout" }}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-layout"/></svg>
+        <span class="layout-label-full">{{ T "fullLayout" }}</span>
+        <span class="layout-label-default">{{ T "defaultLayout" }}</span>
+      </button>
+      {{- end }}
       <button class="icon-button nav-toggle" type="button" aria-label="{{ T "menu" }}" aria-expanded="false" aria-controls="mobile-nav">
         <svg class="icon icon-menu" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg>
         <svg class="icon icon-close" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg>

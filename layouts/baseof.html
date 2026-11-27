@@ -11,9 +11,11 @@
           ? stored
           : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         document.documentElement.setAttribute("data-theme", theme);
-        if (localStorage.getItem("layout") === "reading") {
-          document.documentElement.setAttribute("data-layout", "reading");
+        {{- if and .IsPage (eq .Type "posts") }}
+        if (localStorage.getItem("layout") === "full") {
+          document.documentElement.setAttribute("data-layout", "full");
         }
+        {{- end }}
       } catch (e) {}
     })();
   </script>

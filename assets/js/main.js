@@ -31,24 +31,46 @@
   });
 
   /* ---------------------------------------------------------------------
-     Article layout: wide (with the post list sidebar) / focus reading
+     Article layout: default / full width
+     The page reflows when the layout changes. Find the article block at
+     the header's bottom edge and how far down it the edge falls, then
+     scroll by the difference so the reader keeps their place.
      --------------------------------------------------------------------- */
   var layoutToggle = document.querySelector(".layout-toggle");
   if (layoutToggle) {
-    function setLayout(reading) {
-      if (reading) {
-        root.setAttribute("data-layout", "reading");
+    function readingPosition() {
+      var siteHeader = document.querySelector(".site-header");
+      var edge = siteHeader ? siteHeader.getBoundingClientRect().bottom : 0;
+      var blocks = document.querySelectorAll(".article > :not(.article-body), .article-body > *");
+      for (var i = 0; i < blocks.length; i++) {
+        var box = blocks[i].getBoundingClientRect();
+        if (box.bottom > edge) {
+          return { block: blocks[i], fraction: box.height ? Math.max(0, (edge - box.top) / box.height) : 0 };
+        }
+      }
+      return null;
+    }
+    function offsetOf(position) {
+      var box = position.block.getBoundingClientRect();
+      return box.top + position.fraction * box.height;
+    }
+    layoutToggle.addEventListener("click", function () {
+      var full = root.getAttribute("data-layout") !== "full";
+      var position = readingPosition();
+      var before = position && offsetOf(position);
+      if (full) {
+        root.setAttribute("data-layout", "full");
       } else {
         root.removeAttribute("data-layout");
       }
-      layoutToggle.setAttribute("aria-pressed", String(reading));
+      if (position) {
+        root.style.scrollBehavior = "auto";
+        window.scrollBy(0, offsetOf(position) - before);
+        root.style.scrollBehavior = "";
+      }
       try {
-        localStorage.setItem("layout", reading ? "reading" : "wide");
+        localStorage.setItem("layout", full ? "full" : "default");
       } catch (e) {}
-    }
-    layoutToggle.setAttribute("aria-pressed", String(root.getAttribute("data-layout") === "reading"));
-    layoutToggle.addEventListener("click", function () {
-      setLayout(root.getAttribute("data-layout") !== "reading");
     });
   }
 
@@ -87,14 +109,19 @@
 
   /* ---------------------------------------------------------------------
      TOC scroll spy
+     The current section is the last heading in the TOC whose top is
+     within 120px of the top of the window (a followed TOC link lands its
+     heading at 76px). At the end of the page, where the last sections may
+     be too short to get that far, it is the last heading in view. Levels
+     the stylesheet hides from the TOC don't count. The rail scrolls to
+     keep the current section in view, also when the window is resized.
      --------------------------------------------------------------------- */
-  var tocLinks = document.querySelectorAll(
-    ".toc-rail .toc-content a[href^='#'], .toc-inline .toc-content a[href^='#']"
-  );
-  if (tocLinks.length && "IntersectionObserver" in window) {
+  var tocLinks = document.querySelectorAll(".toc-content a[href^='#']");
+  if (tocLinks.length) {
     var byHeading = new Map();
     var headings = [];
     tocLinks.forEach(function (link) {
+      if (window.getComputedStyle(link.parentNode.parentNode).display === "none") return;
       var id;
       try {
         id = decodeURIComponent(link.getAttribute("href").slice(1));
@@ -110,24 +137,67 @@
       byHeading.get(heading).push(link);
     });
 
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
-          var links = byHeading.get(entry.target) || [];
-          document.querySelectorAll(".toc-content a.active").forEach(function (link) {
-            link.classList.remove("active");
-          });
-          links.forEach(function (link) {
-            link.classList.add("active");
-          });
+    var tocRail = document.querySelector(".toc-rail");
+    var currentHeading = null;
+
+    function followInRail(link) {
+      if (!tocRail.clientHeight) return;
+      var rail = tocRail.getBoundingClientRect();
+      var box = link.getBoundingClientRect();
+      if (box.top >= rail.top + 48 && box.bottom <= rail.bottom - 24) return;
+      tocRail.scrollTop += box.top - rail.top - rail.height / 3;
+    }
+
+    function updateToc() {
+      var heading = null;
+      for (var i = 0; i < headings.length; i++) {
+        var box = headings[i].getBoundingClientRect();
+        if (!box.height) continue;
+        if (box.top > 120) break;
+        heading = headings[i];
+      }
+      if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        for (var j = headings.length - 1; j >= 0; j--) {
+          var last = headings[j].getBoundingClientRect();
+          if (last.height && last.top < window.innerHeight) {
+            heading = headings[j];
+            break;
+          }
+        }
+      }
+      if (heading === currentHeading) return;
+      if (currentHeading) {
+        byHeading.get(currentHeading).forEach(function (link) {
+          link.classList.remove("active");
         });
-      },
-      { rootMargin: "-80px 0px -70% 0px", threshold: 0 }
-    );
-    headings.forEach(function (heading) {
-      observer.observe(heading);
+      }
+      currentHeading = heading;
+      if (!heading) {
+        if (tocRail) tocRail.scrollTop = 0;
+        return;
+      }
+      byHeading.get(heading).forEach(function (link) {
+        link.classList.add("active");
+        if (tocRail && tocRail.contains(link)) followInRail(link);
+      });
+    }
+
+    var tocFrame = 0;
+    window.addEventListener("scroll", function () {
+      if (tocFrame) return;
+      tocFrame = window.requestAnimationFrame(function () {
+        tocFrame = 0;
+        updateToc();
+      });
+    }, { passive: true });
+    window.addEventListener("resize", function () {
+      updateToc();
+      if (!currentHeading || !tocRail) return;
+      byHeading.get(currentHeading).forEach(function (link) {
+        if (tocRail.contains(link)) followInRail(link);
+      });
     });
+    updateToc();
   }
 
   /* ---------------------------------------------------------------------
