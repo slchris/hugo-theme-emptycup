@@ -1,0 +1,12 @@
+name = "EmptyCup"
+license = "MIT"
+licenselink = "https://github.com/slchris/blog.plz.ac"
+description = "The personal theme of 半瓶斋 / The Empty Cup: a calm, typography-first blog theme with bilingual support."
+homepage = "https://blog.plz.ac"
+demosite = "https://blog.plz.ac"
+tags = ["blog", "bilingual", "responsive", "dark", "minimal"]
+features = ["multilingual", "dark-mode", "toc", "mermaid", "katex", "comments", "seo"]
+
+[author]
+  name = "Chris Su"
+  homepage = "https://blog.plz.ac"

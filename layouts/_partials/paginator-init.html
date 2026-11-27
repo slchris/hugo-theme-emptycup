@@ -1,0 +1,14 @@
+{{- $pag := false -}}
+{{- if .IsHome -}}
+  {{- $pages := where .Site.RegularPages "Section" "posts" -}}
+  {{- $pages = where $pages "Params.hiddenfromhomepage" "!=" true -}}
+  {{- $size := .Site.Params.home.posts.paginate | default 6 -}}
+  {{- $pag = .Paginate $pages $size -}}
+{{- else if eq .Kind "section" -}}
+  {{- $groups := .Pages.GroupByDate "2006" -}}
+  {{- $pag = .Paginate $groups 1 -}}
+{{- else if eq .Kind "term" -}}
+  {{- $groups := .Pages.GroupByDate "2006" -}}
+  {{- $pag = .Paginate $groups 1 -}}
+{{- end -}}
+{{- with $pag -}}{{ $.Scratch.Set "paginator" . }}{{- end -}}

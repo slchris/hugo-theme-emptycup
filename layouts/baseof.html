@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.LanguageCode | default .Site.Language.Lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem("theme");
+        var theme = stored === "light" || stored === "dark"
+          ? stored
+          : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+  {{- partial "paginator-init.html" . -}}
+  <title>{{ block "title" . }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
+  {{- partial "head.html" . -}}
+</head>
+<body class="kind-{{ .Kind }}"{{ if .Params.lightgallery }} data-lightbox="true"{{ end }}{{ if .Site.Params.page.table.sort }} data-table-sort="true"{{ end }}>
+  {{- partial "sprite.html" . -}}
+  <a class="skip-link" href="#content">{{ T "skipToContent" }}</a>
+  {{- partial "header.html" . -}}
+  <main class="main" id="content">
+    {{- block "main" . }}{{ end -}}
+  </main>
+  {{- partial "footer.html" . -}}
+  {{- partial "controls.html" . -}}
+  {{- $js := resources.Get "js/main.js" | minify | fingerprint -}}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+</body>
+</html>
