@@ -50,7 +50,7 @@ The theme reads the same parameter names used by this blog. Only a few are requi
     [params.page.table]
       sort = true
     [params.page.comment]
-      enable = false
+      enable = true
       [params.page.comment.utterances]
         enable = true
         repo = "owner/repo"
