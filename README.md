@@ -15,7 +15,7 @@ The personal blog theme of [半瓶斋 / The Empty Cup](https://blog.plz.ac). A c
 
 ## Requirements
 
-Hugo **0.158 or newer** (extended edition recommended, so image processing is available).
+Hugo **0.147 or newer** (extended edition recommended, so image processing is available).
 
 ## Installation
 

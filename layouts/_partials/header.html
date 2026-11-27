@@ -20,7 +20,7 @@
 
     <div class="header-actions">
       {{- with $langTarget }}
-      <a class="lang-switch" href="{{ .RelPermalink }}" hreflang="{{ .Lang }}" lang="{{ .Language.Locale }}" title="{{ T "selectLanguage" }}">{{ .Language.Label }}</a>
+      <a class="lang-switch" href="{{ .RelPermalink }}" hreflang="{{ .Lang }}" lang="{{ .Language.LanguageCode }}" title="{{ T "selectLanguage" }}">{{ .Language.LanguageName }}</a>
       {{- end }}
       <button class="icon-button theme-toggle" type="button" aria-label="{{ T "switchTheme" }}" title="{{ T "switchTheme" }}">
         <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-moon"/></svg>
