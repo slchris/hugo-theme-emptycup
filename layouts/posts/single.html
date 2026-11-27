@@ -13,8 +13,8 @@
 {{- $hasAd := and $ads.enable (or $ads.placeholder $ads.client) -}}
 {{- $showRail := or $hasToc $hasAd -}}
 
-<div class="post-layout with-meta-rail{{ if $showRail }} with-rail{{ end }}">
-  {{- partial "article-meta-rail.html" . }}
+<div class="post-layout with-sidebar{{ if $showRail }} with-rail{{ end }}">
+  {{- partial "article-sidebar.html" . }}
   <article class="article">
     <header class="article-header">
       <h1 class="article-title">{{ .Title }}</h1>
@@ -69,6 +69,15 @@
     </footer>
 
     {{- partial "sponsor.html" . }}
+
+    <div class="post-end-actions">
+      <button class="layout-toggle" type="button" aria-pressed="false" aria-label="{{ T "toggleLayout" }}" title="{{ T "toggleLayout" }}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-layout"/></svg>
+        <span class="layout-label-focus">{{ T "readingLayout" }}</span>
+        <span class="layout-label-expand">{{ T "wideLayout" }}</span>
+      </button>
+    </div>
+
     {{- partial "comments.html" . }}
   </article>
 

@@ -1,0 +1,29 @@
+{{- $dateFormat := .Site.Params.dateformat | default "2006-01-02" -}}
+{{- $posts := where .Site.RegularPages "Section" "posts" -}}
+<aside class="article-sidebar" aria-label="{{ T "moreArticles" }}">
+  <div class="side-feed">
+    {{- $shown := 0 -}}
+    {{- range $posts.ByDate.Reverse }}
+      {{- if and (lt $shown 5) (ne .RelPermalink $.RelPermalink) }}
+      {{- $summary := .Params.summary | default .Params.description -}}
+      {{- if not $summary -}}
+        {{- $summary = .Summary | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 110 -}}
+      {{- end -}}
+      <a class="feed-card" href="{{ .RelPermalink }}">
+        <span class="feed-card-meta">
+          <time datetime="{{ .PublishDate.Format "2006-01-02" }}">{{ .PublishDate.Format $dateFormat }}</time>
+          {{- with .GetTerms "categories" }}
+          <span class="feed-card-category">{{ range $i, $t := . }}{{ if $i }} · {{ end }}{{ $t.LinkTitle }}{{ end }}</span>
+          {{- end }}
+        </span>
+        <span class="feed-card-title">{{ .Title }}</span>
+        {{- with $summary }}
+        <span class="feed-card-summary">{{ . }}</span>
+        {{- end }}
+        <span class="feed-card-more">{{ T "readMore" }}</span>
+      </a>
+        {{- $shown = add $shown 1 -}}
+      {{- end }}
+    {{- end }}
+  </div>
+</aside>

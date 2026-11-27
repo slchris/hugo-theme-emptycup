@@ -31,6 +31,28 @@
   });
 
   /* ---------------------------------------------------------------------
+     Article layout: wide (with the post list sidebar) / focus reading
+     --------------------------------------------------------------------- */
+  var layoutToggle = document.querySelector(".layout-toggle");
+  if (layoutToggle) {
+    function setLayout(reading) {
+      if (reading) {
+        root.setAttribute("data-layout", "reading");
+      } else {
+        root.removeAttribute("data-layout");
+      }
+      layoutToggle.setAttribute("aria-pressed", String(reading));
+      try {
+        localStorage.setItem("layout", reading ? "reading" : "wide");
+      } catch (e) {}
+    }
+    layoutToggle.setAttribute("aria-pressed", String(root.getAttribute("data-layout") === "reading"));
+    layoutToggle.addEventListener("click", function () {
+      setLayout(root.getAttribute("data-layout") !== "reading");
+    });
+  }
+
+  /* ---------------------------------------------------------------------
      Mobile navigation
      --------------------------------------------------------------------- */
   var header = document.querySelector(".site-header");
