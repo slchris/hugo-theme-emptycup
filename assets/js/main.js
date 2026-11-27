@@ -183,6 +183,42 @@
   });
 
   /* ---------------------------------------------------------------------
+     Shell command emphasis
+     Chroma deliberately leaves external commands (docker, curl, …) as
+     plain text. Add a class so they read like commands, not output.
+     --------------------------------------------------------------------- */
+  function enhanceShellCommands() {
+    var selector = [
+      "code.language-bash",
+      "code.language-shell",
+      "code.language-sh",
+      "code.language-zsh",
+      "code[data-lang='bash']",
+      "code[data-lang='shell']",
+      "code[data-lang='sh']",
+      "code[data-lang='zsh']"
+    ].join(",");
+
+    document.querySelectorAll(selector).forEach(function (code) {
+      code.querySelectorAll(".line .cl").forEach(function (line) {
+        var node = line.firstChild;
+        if (!node || node.nodeType !== 3) return;
+        var match = node.nodeValue.match(/^(\s*)(?:(\$|>)\s+)?([A-Za-z0-9_./-]+)/);
+        if (!match) return;
+        var prefix = match[1] + (match[2] ? match[2] + " " : "");
+        var command = match[3];
+        if (!command || command.charAt(0) === "#") return;
+        var span = document.createElement("span");
+        span.className = "sh-cmd";
+        span.textContent = command;
+        node.nodeValue = node.nodeValue.slice(prefix.length + command.length);
+        if (prefix) line.insertBefore(document.createTextNode(prefix), node);
+        line.insertBefore(span, node);
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
      Sortable tables
      --------------------------------------------------------------------- */
   if (body.getAttribute("data-table-sort") === "true") {
@@ -425,6 +461,7 @@
     });
   }
 
+  enhanceShellCommands();
   startMermaid();
   renderMath();
 })();

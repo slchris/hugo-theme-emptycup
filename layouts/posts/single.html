@@ -13,7 +13,8 @@
 {{- $hasAd := and $ads.enable (or $ads.placeholder $ads.client) -}}
 {{- $showRail := or $hasToc $hasAd -}}
 
-<div class="post-layout{{ if $showRail }} with-rail{{ end }}">
+<div class="post-layout with-meta-rail{{ if $showRail }} with-rail{{ end }}">
+  {{- partial "article-meta-rail.html" . }}
   <article class="article">
     <header class="article-header">
       <h1 class="article-title">{{ .Title }}</h1>

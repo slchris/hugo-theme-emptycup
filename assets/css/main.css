@@ -32,10 +32,10 @@
   --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.1);
   --radius: 12px;
   --radius-large: 16px;
-  --content-width: 740px;
-  --rail-width: 300px;
-  --gutter: 56px;
-  --page-width: 1152px;
+  --content-width: 820px;
+  --rail-width: 340px;
+  --gutter: 64px;
+  --page-width: 1700px;
 
   --adm-note: #0b5cad;
   --adm-tip: #1f6b3a;
@@ -206,6 +206,18 @@ mark {
 .skip-link:focus {
   left: 16px;
   top: 16px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .icon {
@@ -396,33 +408,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   flex: 1 0 auto;
 }
 
-/* Home hero
+/* Home layout
    ========================================================================== */
-
-.hero {
-  padding: 96px 0 40px;
-  border-bottom: 1px solid var(--border);
-}
-
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.25rem, 5.5vw, 3.75rem);
-  line-height: 1.08;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin: 0 0 18px;
-  text-wrap: balance;
-}
-
-.hero-desc {
-  max-width: 44em;
-  margin: 0;
-  color: var(--muted);
-  font-size: 1.3125rem;
-  line-height: 1.5;
-  letter-spacing: -0.01em;
-  text-wrap: pretty;
-}
 
 @media (max-width: 700px) {
   .header-inner {
@@ -433,8 +420,8 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
     padding: 0 20px 72px;
   }
 
-  .hero {
-    padding: 56px 0 32px;
+  .home-layout {
+    padding-top: 32px;
   }
 
   .list-page {
@@ -446,15 +433,13 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   }
 }
 
-/* Home layout
-   ========================================================================== */
-
 .home-layout {
   display: grid;
   grid-template-columns: minmax(0, var(--content-width)) var(--rail-width);
   gap: var(--gutter);
   justify-content: center;
   align-items: start;
+  padding-top: 48px;
 }
 
 .home-main {
@@ -555,6 +540,55 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
 .post-item:first-child {
   padding-top: 36px;
   border-top: 0;
+}
+
+@media (min-width: 1600px) {
+  .home-layout {
+    grid-template-columns: minmax(0, 1fr) var(--rail-width);
+  }
+
+  .side-rail {
+    padding-top: 0;
+  }
+
+  .post-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 64px;
+  }
+
+  .post-item,
+  .post-item:first-child {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border: 0;
+    border-radius: var(--radius-large);
+    background: var(--bg-soft);
+  }
+
+  .post-item-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .post-item-summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .post-item .read-more {
+    margin-top: auto;
+    padding-top: 16px;
+  }
+
+  .post-list > .ad-slot {
+    grid-column: 1 / -1;
+    margin: 8px 0;
+  }
 }
 
 .post-thumb {
@@ -865,6 +899,118 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   max-width: calc(var(--content-width) + var(--gutter) + var(--rail-width));
 }
 
+.post-meta-rail {
+  display: none;
+  min-width: 0;
+}
+
+@media (min-width: 1700px) {
+  .post-layout.with-meta-rail {
+    grid-template-columns: 260px minmax(0, var(--content-width)) var(--rail-width);
+    max-width: calc(260px + var(--content-width) + var(--rail-width) + var(--gutter) * 2);
+  }
+
+  .post-layout.with-meta-rail:not(.with-rail) {
+    grid-template-columns: 260px minmax(0, var(--content-width));
+    max-width: calc(260px + var(--content-width) + var(--gutter));
+  }
+
+  .post-layout.with-meta-rail .post-meta-rail {
+    display: block;
+    position: sticky;
+    top: 84px;
+    align-self: start;
+  }
+
+  .post-layout.with-meta-rail .article-header .post-meta,
+  .post-layout.with-meta-rail .article-footer .post-tags {
+    display: none;
+  }
+}
+
+.meta-rail-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.meta-rail-author a {
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+.meta-rail-author a:hover {
+  color: var(--accent);
+}
+
+.meta-rail-dates {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.meta-rail-dates > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.meta-rail-dates dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.meta-rail-dates dd {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.meta-rail-reading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.meta-rail-block {
+  margin-top: 22px;
+}
+
+.meta-rail-label {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.meta-rail-list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+
+.meta-rail-list a {
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+.meta-rail-list a:hover {
+  color: var(--accent);
+}
+
 .article {
   min-width: 0;
 }
@@ -1104,7 +1250,7 @@ html[data-theme="dark"] .theme-toggle .icon-sun {
   color: var(--accent);
 }
 
-@media (max-width: 1151px) {
+@media (max-width: 1339px) {
   .home-layout {
     grid-template-columns: minmax(0, var(--content-width));
   }
@@ -1404,6 +1550,21 @@ body[data-lightbox="true"] .article-body img {
   border: 0;
   background: none;
   font-size: inherit;
+}
+
+.chroma .sh-cmd {
+  color: #0550ae;
+  font-weight: 600;
+}
+
+html[data-theme="dark"] .chroma .sh-cmd {
+  color: #79c0ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .chroma .sh-cmd {
+    color: #79c0ff;
+  }
 }
 
 .article-body pre.mermaid {
@@ -1890,7 +2051,6 @@ body.lightbox-open {
 
 /* Display type */
 
-.hero-title,
 .page-title,
 .post-item-title,
 .article-title,
@@ -1903,7 +2063,6 @@ body.lightbox-open {
 
 /* Chinese display type */
 
-html[lang|="zh"] .hero-title,
 html[lang|="zh"] .page-title,
 html[lang|="zh"] .post-item-title,
 html[lang|="zh"] .article-title,
@@ -1914,7 +2073,6 @@ html[lang|="zh"] .not-found-code {
   letter-spacing: 0;
 }
 
-html[lang|="zh"] .hero-title,
 html[lang|="zh"] .article-title {
   line-height: 1.22;
 }

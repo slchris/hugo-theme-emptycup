@@ -3,12 +3,7 @@
 {{- end }}
 
 {{ define "main" }}
-<section class="hero">
-  <h1 class="hero-title">{{ .Site.Title }}</h1>
-  {{- with .Site.Params.description }}
-  <p class="hero-desc">{{ . }}</p>
-  {{- end }}
-</section>
+<h1 class="visually-hidden">{{ .Site.Title }}</h1>
 
 {{- partial "ad-slot.html" (dict "slot" "homeTop" "class" "home-top" "format" "horizontal" "size" "970 × 90") }}
 

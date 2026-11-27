@@ -5,10 +5,10 @@ The personal blog theme of [半瓶斋 / The Empty Cup](https://blog.plz.ac). A c
 ## Features
 
 - System sans typography and a clean, spacious reading surface, with a matching dark mode (respects `prefers-color-scheme`, remembers the reader's choice)
-- Adaptive page shell: a wide article list with a sidebar on large screens, and a single comfortable column on smaller ones
+- Fluid page shell: a two-column post grid on wide screens, a three-column article layout with metadata, reading column and TOC, and a single comfortable column on smaller screens
 - Google AdSense slots for the home leaderboard, in-feed, sidebar, and top of article; all optional and disabled by default
 - Article layout with a sticky table of contents rail on wide screens and a collapsible TOC on small screens
-- Client-side Mermaid diagrams, KaTeX math, code copy / long-block collapse, sortable tables, and a lightweight image lightbox
+- Client-side Mermaid diagrams, KaTeX math, code copy / long-block collapse, shell command emphasis, sortable tables, and a lightweight image lightbox
 - Series navigation, previous / next post links, tag and category pages grouped by year
 - Multilingual: language switcher, translated UI strings (`i18n/`), hreflang and `x-default`
 - SEO: canonical URLs, Open Graph / Twitter cards, JSON-LD (`WebSite` and `BlogPosting`), RSS, sitemap, 404 with `noindex`
